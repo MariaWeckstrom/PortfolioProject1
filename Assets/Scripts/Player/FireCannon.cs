@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class FireCannon : MonoBehaviour
 {
-    [SerializeField] float m_fireRate = 0.25f;
+    [SerializeField] float m_fireRate = 0.5f;
     [SerializeField] Transform m_muzzleTransform;
     [SerializeField] GameObject m_projectile;
 
