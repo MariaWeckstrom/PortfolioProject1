@@ -8,7 +8,14 @@ public class AlienFire : MonoBehaviour
     [SerializeField] float m_minFireRate = 5f;
     [SerializeField] Transform m_muzzleTransform;
     [SerializeField] GameObject m_projectile;
+    [SerializeField] AnimationCurve m_fireRateMultiplierCurve;
     bool canFire = true;
+    private float normalizedFireRateDifficulty = 0f;
+
+    private void Start()
+    {
+        GameManager.Instance.onLevelUp.AddListener(OnLevelUp);
+    }
 
     void FixedUpdate()
     {
@@ -31,11 +38,20 @@ public class AlienFire : MonoBehaviour
                     GameObject projectileInst = Instantiate(m_projectile);
                     projectileInst.transform.position = spawnPosition;
                     canFire = false;
-                    float firingInterval = Random.Range(m_maxFireRate, m_minFireRate);
-                    yield return new WaitForSecondsRealtime(5f);
+                    float fireRateMultiplier = m_fireRateMultiplierCurve.Evaluate(normalizedFireRateDifficulty);
+                    float firingInterval = Random.Range(m_maxFireRate, m_minFireRate) * fireRateMultiplier;
+                    yield return new WaitForSecondsRealtime(firingInterval);
                     canFire = true;
                 }
             }
         }
+    }
+
+    void OnLevelUp(int currentLevel, int maxLevel)
+    {
+        normalizedFireRateDifficulty = Mathf.Clamp((float)currentLevel / (float)maxLevel, 0f, 1f);
+        Debug.Log(normalizedFireRateDifficulty);
+        Debug.Log(currentLevel);
+        Debug.Log(maxLevel);
     }
 }
