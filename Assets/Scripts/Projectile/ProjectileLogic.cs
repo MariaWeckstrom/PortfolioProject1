@@ -7,6 +7,8 @@ public class ProjectileLogic : MonoBehaviour
 {
     [SerializeField] private float m_projectileSpeed = 20f;
 
+    private AlienEffects alienScript;
+
     private void FixedUpdate()
     {
         transform.position += Vector3.up * m_projectileSpeed * Time.fixedDeltaTime;
@@ -23,7 +25,9 @@ public class ProjectileLogic : MonoBehaviour
     {
         if (other.gameObject.tag == "Alien")
         {
-            Destroy(other.gameObject);
+            alienScript = other.gameObject.GetComponent<AlienEffects>();
+            alienScript.OnDeath();
+            //Destroy(other.gameObject);
             Destroy(this.gameObject);
         }
     }

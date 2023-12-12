@@ -98,7 +98,7 @@ GameObject:
   - component: {fileID: -7854713898827627066}
   m_Layer: 0
   m_Name: AlienProjectile
-  m_TagString: Untagged
+  m_TagString: Projectile
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -153,8 +153,8 @@ CapsuleCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: -0.000000007450581, y: -0.003198564}
-  m_Size: {x: 0.1363716, y: 0.6470772}
+  m_Offset: {x: -0.000000007450581, y: 0.002024442}
+  m_Size: {x: 0.11249508, y: 0.6276775}
   m_Direction: 0
 --- !u!50 &671414919399707666
 Rigidbody2D:
@@ -196,4 +196,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_projectileSpeed: 10
-  damage: 1
+  m_damage: 1

@@ -6,6 +6,12 @@ TagManager:
   tags:
   - Alien
   - AlienManager
+  - Projectile
+  - AlienDeathSound
+  - BackgroundMusic
+  - DeathScreen
+  - Canvas
+  - Muzzle
   layers:
   - Default
   - TransparentFX

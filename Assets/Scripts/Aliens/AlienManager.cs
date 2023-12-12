@@ -1,16 +1,18 @@
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
-using static UnityEngine.RuleTile.TilingRuleOutput;
+//using static UnityEngine.RuleTile.TilingRuleOutput;
 
 public class AlienManager : MonoBehaviour
 {
     [SerializeField] List<GameObject> m_alienTypes = new List<GameObject>();
     [SerializeField] Vector2 m_colsAndRows = Vector2.zero;
     [SerializeField] Vector2 m_padding = Vector2.zero;
-    [SerializeField] Vector3 parentPosition = Vector3.zero;
-    private float movementAmountX = 0.3f;
+    private Vector3 initPosition;
+    private bool startMoving = false;
+
+    private float initMovementAmountX = 0.3f;
+    private float movementAmountX;
     private float movementAmountY = -0.5f;
     private bool directionSwitch = false;
     private bool newSpeed = true;
@@ -18,17 +20,38 @@ public class AlienManager : MonoBehaviour
     private float accelerationMultiplier = 0.95f;
     private int childrenCount = 0;
 
+    private GameObject player;
+    private float alienMaxTravel;
+    PlayerHealth playerHealthScript;
+    FireCannon playerCannonScript;
+
+    public Sprite[] spriteList;
+    int spriteIndex = 0;
+
     void Start()
     {
-        parentPosition = transform.position;
+        movementAmountX = initMovementAmountX;
+
+        //kill the player if aliens get too close
+        player = GameObject.FindWithTag("Player");
+        alienMaxTravel = player.transform.position.y+2;
+        playerHealthScript = player.GetComponent<PlayerHealth>();
+
+        //disable firing while aliens are still on their way
+        playerCannonScript = player.GetComponent<FireCannon>();
+
+        initPosition = transform.position;
         SpawnAliens();
         childrenCount = this.transform.childCount;
     }
 
     public void SpawnAliens()
     {
-        transform.position = parentPosition;
-        Vector2 startPosition = Vector2.zero; ;
+        playerCannonScript.enabled = false;
+        startMoving = false;
+        this.GetComponent<AlienFire>().enabled = false;
+        transform.position = initPosition;
+        Vector2 startPosition = initPosition;
         if (m_alienTypes.Count > 0)
         {
             for (int i = 0; i < m_colsAndRows.y; i++)
@@ -45,27 +68,41 @@ public class AlienManager : MonoBehaviour
                 }
             }
         }
+        transform.position = initPosition + new Vector3(0, 15, 0);
     }
 
     private void FixedUpdate()
     {
-        if (newSpeed)
+        if (startMoving)
         {
-            InvokeRepeating("MoveAliens", movementSpeedSeconds, movementSpeedSeconds);
-            newSpeed = false;
+            if (newSpeed)
+            {
+                InvokeRepeating("MoveAliens", movementSpeedSeconds, movementSpeedSeconds);
+                newSpeed = false;
+            }
+            if (childrenCount > this.transform.childCount)
+            {
+                CancelInvoke();
+                movementSpeedSeconds *= accelerationMultiplier;
+                Mathf.Clamp(movementSpeedSeconds, 0.05f, movementSpeedSeconds);
+                newSpeed = true;
+                childrenCount = this.transform.childCount;
+            }
         }
-        if (this.transform.childCount == 0)
-        {
-            Debug.Log("voitto");
-            SpawnAliens();
-        }
-        if (childrenCount > this.transform.childCount)
+        else
         {
             CancelInvoke();
-            movementSpeedSeconds *= accelerationMultiplier;
-            Mathf.Clamp(movementSpeedSeconds, 0.05f, movementSpeedSeconds);
             newSpeed = true;
-            childrenCount = this.transform.childCount;
+            if (transform.position.y > initPosition.y)
+            {
+                transform.position += new Vector3(0, -7 * Time.fixedDeltaTime, 0);
+            }
+            else
+            {
+                this.GetComponent<AlienFire>().enabled = true;
+                playerCannonScript.enabled = true;
+                startMoving = true;
+            } 
         }
     }
 
@@ -78,17 +115,47 @@ public class AlienManager : MonoBehaviour
 
         if (!directionSwitch)
         {
+            if (spriteIndex == 1)
+            {
+                spriteIndex = 0;
+            }
+            else
+            {
+                spriteIndex = 1;
+            }
+            for (int i = 0; i < this.transform.childCount; i++)
+            {
+                //sprite change
+                SpriteRenderer spriteRenderer = this.transform.GetChild(i).GetComponent<SpriteRenderer>();
+                spriteRenderer.sprite = spriteList[spriteIndex];
+
+                //to kill the player if aliens get too close
+                if (this.transform.GetChild(i).transform.position.y <= alienMaxTravel)
+                {
+                    playerHealthScript.TakeDamage(playerHealthScript.m_maxHealth);
+                }
+            }
+            
             for (int i = 0; i < this.transform.childCount; i++)
             {
                 Vector3 child_position = this.transform.GetChild(i).transform.position;
-                float borderOffset = worldWidth - this.transform.GetChild(i).transform.localScale.x * 0.5f;
-                if (child_position.x + movementAmountX*2 >= borderOffset || child_position.x + movementAmountX*2 <= -borderOffset)
+                float borderOffset = worldWidth - this.transform.GetChild(i).GetComponent<SpriteRenderer>().bounds.size.x * 0.5f;
+                if (child_position.x + movementAmountX >= borderOffset)
                 {
-                    movementAmountX = -movementAmountX;
+                    movementAmountX = -initMovementAmountX;
                     Vector3 movementY = new Vector3(0, movementAmountY, 0);
                     transform.position += movementY;
                     directionSwitch = true;
                     return;
+                }
+                else if (child_position.x + movementAmountX <= -borderOffset)
+                {
+                    movementAmountX = initMovementAmountX;
+                    Vector3 movementY = new Vector3(0, movementAmountY, 0);
+                    transform.position += movementY;
+                    directionSwitch = true;
+                    return;
+
                 }
             }
         }

@@ -13,10 +13,12 @@ public class AlienProjectileLogic : MonoBehaviour
 
         //destroy projectile when it's out of sight
         Camera cam = Camera.main;
-        float aspect = (float)Screen.width / Screen.height;
         float worldHeight = cam.orthographicSize;
         float borderOffset = - worldHeight - transform.localScale.y * 0.5f;
-        if (transform.position.y < borderOffset) { Destroy(this.gameObject); }
+        if (transform.position.y < borderOffset) 
+        { 
+            Destroy(this.gameObject); 
+        }
     }
 
     void OnTriggerEnter2D(Collider2D other)
