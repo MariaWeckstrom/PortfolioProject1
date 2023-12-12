@@ -1,7 +1,7 @@
 # Space War
 
 ## Overview
-This game was made as a school project. The goal was to independently create a game that takes inspiration from a classic game. The inspiration for this game was Space Invaders. The game was made using Unity.
+This game was made as a school project. The goal was to independently create a game that takes inspiration from a classic game. The inspiration for this game was Space Invaders. The game was made using Unity. Sound effects and music were taken from Unity Asset Store, visuals were self-made.
 
 ## Screenshots
 ![image](https://github.com/MariaWeckstrom/PortfolioProject1/assets/111729331/689a6b14-9f7a-4216-b414-60c5526824ec)
@@ -13,7 +13,7 @@ This game was made as a school project. The goal was to independently create a g
 ## Itch.io
 [Play the game at Itch.io](https://mariaweckstrom.itch.io/space-war)
 
-## How to play
+#### How to play
 - Use WASD or arrow keys to move left and right
 - Use spacebar to shoot
 - Complete 10 levels to win
