@@ -30,12 +30,7 @@ public class FireCannon : MonoBehaviour
     [SerializeField] float m_fireRate = 0.5f;
     [SerializeField] Transform m_muzzleTransform;
     [SerializeField] GameObject m_projectile;
-    AudioSource audioSource;
-
-    void Start()
-    {
-        audioSource = this.transform.GetChild(0).GetComponent<AudioSource>();
-    }
+    [SerializeField] AudioSource audioSource;
 
     private void FixedUpdate()
     {
@@ -60,7 +55,7 @@ public class FireCannon : MonoBehaviour
                 GameObject projectileInst = Instantiate(m_projectile);
                 projectileInst.transform.position = spawnPosition;
                 audioSource.pitch = Random.Range(1f, 1.2f);
-                audioSource.volume = Random.Range(0.1f, 0.2f);
+                audioSource.volume = Random.Range(0.05f, 0.15f);
                 audioSource.Play();
                 canFire = false;
                 yield return new WaitForSecondsRealtime(m_fireRate);
